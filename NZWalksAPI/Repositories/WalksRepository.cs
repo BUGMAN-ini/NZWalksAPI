@@ -27,20 +27,38 @@ namespace NZWalksAPI.Repositories
 
         public async Task<Walk?> Delete([FromRoute] Guid id)
         {
-            var result = await _context.Walks.FirstOrDefaultAsync(x => x.Id == id);
-            if (result == null) return null;
-
-            return result;
+            return await _context.Walks.FirstOrDefaultAsync(x => x.Id == id);
         }
 
 
-        public async Task<List<Walk>> GetAll()
+        public async Task<List<Walk>> GetAll(string? filteron = null, string? filterquery = null, string? sortBy = null, bool isascending = true, int pagenumber = 1, int pagesize = 100)
         {
-            return await _context.Walks.Include("Difficulty").Include("Region").ToListAsync();
-            
+            var walks = _context.Walks.Include("Difficulty").Include("Region").AsQueryable();
+
+            if(string.IsNullOrWhiteSpace(filteron) == false && string.IsNullOrWhiteSpace(filterquery) == false )
+            {
+                if(filteron.Equals("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = walks.Where(x => x.Name.Contains(filterquery));
+                }
+            }
+
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                if(sortBy.Contains("Name", StringComparison.OrdinalIgnoreCase))
+                {
+                    walks = isascending ? walks.OrderBy(x => x.Name) :  walks.OrderByDescending(x => x.Name);
+                }
+            }
+
+            var skipresult = (pagenumber - 1) * pagesize;
+
+                
+
+            return await walks.Skip(skipresult).Take(pagesize).ToListAsync();
+
         }
 
-        
         public async Task<Walk> GetById([FromRoute] Guid id)
         {
             var result = await _context.Walks.FirstOrDefaultAsync(x => x.Id == id);

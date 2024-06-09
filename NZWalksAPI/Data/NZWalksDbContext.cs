@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NZWalksAPI.Models.Domain;
 
 namespace NZWalksAPI.Data
@@ -6,7 +7,7 @@ namespace NZWalksAPI.Data
     public class NZWalksDbContext : DbContext
     {
 
-        public NZWalksDbContext(DbContextOptions options) : base(options) { }
+        public NZWalksDbContext(DbContextOptions<NZWalksDbContext> options) : base(options) { }
 
         public DbSet<Difficulty> Difficulties { get; set; }
         public DbSet<Region> Regions { get; set; }
