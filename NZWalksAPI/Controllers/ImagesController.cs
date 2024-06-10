@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using NZWalksAPI.Models.Domain;
 using NZWalksAPI.Models.DTO_s;
+using NZWalksAPI.Repositories;
 
 namespace NZWalksAPI.Controllers
 {
@@ -10,7 +11,12 @@ namespace NZWalksAPI.Controllers
     public class ImagesController : ControllerBase
     {
 
+        private readonly LocalImageRepository _imageRepository;
 
+        public ImagesController(LocalImageRepository imageRepository)
+        {
+            _imageRepository = imageRepository;
+        }
 
         [HttpPost]
         [Route("Upload")]
@@ -20,6 +26,7 @@ namespace NZWalksAPI.Controllers
 
             if(ModelState.IsValid)
             {
+                //Convert DTO to DomainModel
                 var imagedomainmodel = new Image
                 {
                     File = uploadImage.File,
@@ -28,6 +35,13 @@ namespace NZWalksAPI.Controllers
                     FileNAme = uploadImage.FileName,
                     FileDescription = uploadImage.FileDescription
                 };
+
+
+                //User Repository To Upload File
+
+                await _imageRepository.upload(imagedomainmodel);
+
+                return Ok(imagedomainmodel);
             }
 
             return BadRequest(ModelState);
@@ -44,8 +58,8 @@ namespace NZWalksAPI.Controllers
             }
             if(request.File.Length > 10485760)
             {
-                ModelState.AddModelError("file","file size more than 10mb, please upload smaller file size")
-            }
+                ModelState.AddModelError("file", "file size more than 10mb, please upload smaller file size");
+            };
         }
     }
 }

@@ -53,7 +53,8 @@ builder.Services.AddScoped<IRegionRepository,SQLRegionRepository>();
 builder.Services.AddScoped<IWalksRepository,WalksRepository>();
 builder.Services.AddScoped<ITokenRepository,TokenRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
-
+builder.Services.AddScoped<IFileUploadRepository,LocalImageRepository>();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddIdentityCore<IdentityUser>()
     .AddRoles<IdentityRole>()
