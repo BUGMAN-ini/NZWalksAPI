@@ -20,7 +20,7 @@ namespace NZWalksAPI.Repositories
         public async Task<Image> upload(Image image)
         {
             var localFilePath = Path.Combine(_environment.ContentRootPath, "Images",
-                image.FileNAme, image.FileExstension);
+                $"{image.FileName}{image.FileExstension}");
 
 
             // Upload Image To Local Path
@@ -29,7 +29,7 @@ namespace NZWalksAPI.Repositories
 
             // localhost:1234/images/image.jpg
             
-            var urlfilepath = $"{_contextAccessor.HttpContext.Request.Scheme}://{_contextAccessor.HttpContext.Request.Host}{_contextAccessor.HttpContext.Request.PathBase}/Images/{image.FileNAme}{image.FileExstension}";
+            var urlfilepath = $"{_contextAccessor.HttpContext.Request.Scheme}://{_contextAccessor.HttpContext.Request.Host}{_contextAccessor.HttpContext.Request.PathBase}/Images/{image.FileName}{image.FileExstension}";
         
             image.FilePath = urlfilepath;
 
