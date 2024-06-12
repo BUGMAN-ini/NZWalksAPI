@@ -64,8 +64,62 @@ namespace NZWalks.UI.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            ViewBag.Id = id;
-            return View();
+            var client = _httpClientFactory.CreateClient();
+            var response = await client.GetFromJsonAsync<RegionDTO>($"https://localhost:7164/api/Regions/{id.ToString()}");
+            
+            if(response is not null)
+            {
+                return View(response);
+            }
+
+            return View(null);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Edit (RegionDTO region)
+        {
+            var client = _httpClientFactory.CreateClient();
+
+            var request = new HttpRequestMessage()
+            {
+                Method = HttpMethod.Put,
+                RequestUri = new Uri($"https://localhost:7164/api/Regions/{region.Id}"),
+                Content = new StringContent(JsonSerializer.Serialize(region), System.Text.Encoding.UTF8, "application/json")
+            };
+
+            var httpresponse = await client.SendAsync(request);
+            httpresponse.EnsureSuccessStatusCode();
+
+            var response = await httpresponse.Content.ReadFromJsonAsync<RegionDTO>();
+
+            if (response is not null)
+            {
+                return RedirectToAction("Edit", "Regions");
+            }
+
+            return View("Edit");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(RegionDTO request)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient();
+
+                var httpresponse = await client.DeleteAsync($"https://localhost:7164/api/Regions/{request.Id}");
+                httpresponse.EnsureSuccessStatusCode();
+
+                return RedirectToAction("Edit", "Regions");
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            return View("Edit") ;
+
         }
     
     
