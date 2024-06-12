@@ -7,23 +7,25 @@ using NZWalksAPI.Data;
 using NZWalksAPI.Models.Domain;
 using NZWalksAPI.Models.DTO_s;
 using NZWalksAPI.Repositories;
+using System.Net;
 
 namespace NZWalksAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class WalksController : ControllerBase
     {
         private readonly IWalksRepository _walksRepository;
         private readonly IMapper _mapper;
         private readonly NZWalksDbContext _context;
+        private readonly ILogger<WalksController> _logger;
 
-        public WalksController(IWalksRepository walksRepository, IMapper mapper, NZWalksDbContext context)
+        public WalksController(IWalksRepository walksRepository, IMapper mapper, NZWalksDbContext context, ILogger<WalksController> logger)
         {
             _walksRepository = walksRepository;
             _mapper = mapper;
             _context = context;
+            _logger = logger;
         }
 
 
@@ -33,9 +35,16 @@ namespace NZWalksAPI.Controllers
                                                      [FromQuery] string? SortBy,[FromQuery] bool? isascending
                                                     ,[FromQuery] int pagenumber = 1, [FromQuery] int resultsize = 100)
         {
-            var result = await _walksRepository.GetAll(filteron,filterQuery,SortBy,isascending ?? true,pagenumber,resultsize);
-     
-            return Ok(_mapper.Map<List<WalkDTO>>(result));
+
+                var result = await _walksRepository.GetAll(filteron, filterQuery,
+                                                        SortBy, isascending ?? true,
+                                                        pagenumber, resultsize);
+
+            throw new Exception("This is a new EXception");
+
+
+                return Ok(_mapper.Map<List<WalkDTO>>(result));
+
         }
 
         [HttpGet]
